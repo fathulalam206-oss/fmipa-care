@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FMIPA-Care App Premium</title>
+
+<!-- Library QRCode & Lucide Icons -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root {
+  --primary: #38bdf8;
+  --secondary: #6366f1;
+  --bg: #020617;
+  --card-bg: rgba(255, 255, 255, 0.06);
+  --text: #f8fafc;
+  --accent-red: #fb7185;
+  --accent-green: #22c55e;
+  --accent-yellow: #fbbf24;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  background: radial-gradient(circle at top right, #1e293b, #020617);
+  color: var(--text);
+  padding-bottom: 120px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 25px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--primary);
+  text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+
+/* PAGE ANIMATION */
+.page {
+  display: none;
+  padding: 20px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.active {
+  display: block;
+  animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* HERO SECTION */
+.hero {
+  padding: 28px;
+  border-radius: 32px;
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.5);
+  margin-bottom: 25px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero h2 { margin: 0; font-size: 1.6rem; font-weight: 800; }
+.hero p { margin: 10px 0; font-size: 13px; opacity: 0.9; line-height: 1.6; }
+
+/* BENTO GRID */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.bento-item {
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 15px;
+}
+
+.bento-item i { margin-bottom: 10px; }
+.bento-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; display: block; }
+.bento-desc { font-size: 10px; opacity: 0.7; line-height: 1.4; }
+
+/* PACKAGE CARD */
+.package-card {
+  background: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px; padding: 20px; margin-bottom: 15px;
+  backdrop-filter: blur(10px);
+}
+
+/* ID CARD PREMIUM */
+.idcard {
+  padding: 30px;
+  border-radius: 32px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-height: 240px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.idcard.hemat { background: linear-gradient(135deg, #0ea5e9, #2563eb); }
+.idcard.lengkap { background: linear-gradient(135deg, #7c3aed, #4338ca); }
+
+.idcard::after {
+  content: ""; position: absolute; top: 0; left: -150%; width: 100%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: shine 6s infinite;
+}
+
+@keyframes shine {
+  0% { left: -150%; } 20% { left: 150%; } 100% { left: 150%; }
+}
+
+.card-chip {
+  width: 45px; height: 35px;
+  background: linear-gradient(135deg, #ffd700, #b8860b);
+  border-radius: 8px; margin-bottom: 20px;
+}
+
+.id-name { font-size: 22px; font-weight: 800; margin-bottom: 15px; }
+.id-label { font-size: 9px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+.detail-val { font-size: 13px; font-weight: 600; margin-bottom: 10px; display: block; }
+
+.qr-container {
+  background: white; padding: 8px; border-radius: 12px;
+  width: fit-content; margin: 10px auto 0;
+}
+
+/* BUTTONS & INPUTS */
+.btn {
+  width: 100%; padding: 16px; border: none; border-radius: 20px;
+  font-weight: 700; cursor: pointer; transition: 0.3s;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white; font-size: 14px;
+}
+.btn:active { transform: scale(0.97); }
+
+input, select {
+  width: 100%; padding: 16px; margin: 10px 0; border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
+  color: rgb(118, 113, 113); box-sizing: border-box; outline: none;
+}
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  width: 90%; max-width: 450px; background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(25px); border-radius: 28px; display: flex;
+  padding: 12px 5px; border: 1px solid rgba(255,255,255,0.1); z-index: 1000;
+}
+
+.bottom-nav button {
+  flex: 1; background: none; border: none; color: #64748b;
+  font-size: 10px; font-weight: 700; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+}
+
+.bottom-nav button.active-btn { color: var(--primary); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <i data-lucide="shield-check"></i> FMIPA-Care
+</div>
+
+<!-- HOME -->
+<div id="home" class="page active">
+  <div class="hero">
+    <div style="position: absolute; right: -20px; top: -20px; opacity: 0.2;">
+      <i data-lucide="heart-pulse" style="width: 100px; height: 100px;"></i>
+    </div>
+    <h2>Perlindungan Kesehatan Mahasiswa FMIPA UNM</h2>
+    <p>FMIPA-Care merupakan program perlindungan kesehatan sederhana yang dirancang khusus untuk mahasiswa. Program ini memberikan manfaat perlindungan terhadap risiko kesehatan yang sering terjadi, dengan iuran yang terjangkau dan proses yang mudah..</p>
+  </div>
+
+  <h3 style="display:flex; align-items:center; gap:8px; font-size: 16px;">
+    <i data-lucide="shield-plus" style="color:var(--primary); width:20px"></i> Penyakit & Risiko yang Dijamin
+  </h3>
+
+  <div class="bento-grid">
+    <div class="bento-item">
+      <i data-lucide="soup" style="color:var(--accent-red)"></i>
+      <span class="bento-title">Penyakit Lambung</span>
+      <span class="bento-desc">Maag (gastritis), GERD yang butuh rawat inap.</span>
+    </div>
+    <div class="bento-item">
+      <i data-lucide="thermometer-sun" style="color:var(--accent-yellow)"></i>
+      <span class="bento-title">Penyakit Infeksi</span>
+      <span class="bento-desc">Tipes, DBD, ISPA berat, Diare akut & dehidrasi.</span>
+    </div>
+    <div class="bento-item">
+      <i data-lucide="droplets" style="color:var(--accent-red)"></i>
+      <span class="bento-title">Penyakit Darah</span>
+      <span class="bento-desc">Anemia berat (Rawat inap/Transfusi).</span>
+    </div>
+    <div class="bento-item">
+      <i data-lucide="ambulance" style="color:var(--accent-green)"></i>
+      <span class="bento-title">Kecelakaan</span>
+      <span class="bento-desc">Lalu lintas, Jatuh, Praktikum, & Cedera Olahraga.</span>
+    </div>
+  </div>
+
+  <!-- FITUR UTAMA PRODUK - LENGKAP -->
+  <div class="package-card" style="background: rgba(56, 189, 248, 0.05); border-color: rgba(56, 189, 248, 0.2);">
+    <h4 style="margin: 0 0 15px 0; color:var(--primary); font-size:16px; display:flex; align-items:center; gap:8px">
+      <i data-lucide="info" style="width:18px"></i> Fitur Utama Produk
+    </h4>
+    
+    <div style="display:grid; gap:16px; font-size:12px; opacity:0.95">
+      <div style="display:flex; gap:12px">
+        <i data-lucide="shield-check" style="width:18px; color:var(--primary); flex-shrink:0"></i>
+        <div>
+          <b style="color:var(--primary); display:block; margin-bottom:2px">Objek Perlindungan</b>
+          <span>Risiko rawat inap akibat sakit maupun kecelakaan.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px">
+        <i data-lucide="calendar-days" style="width:18px; color:var(--primary); flex-shrink:0"></i>
+        <div>
+          <b style="color:var(--primary); display:block; margin-bottom:2px">Masa Kepesertaan</b>
+          <span>Berlaku 1 tahun akademik & dapat diperpanjang.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px">
+        <i data-lucide="users" style="width:18px; color:var(--accent-red); flex-shrink:0"></i>
+        <div>
+          <b style="color:var(--accent-red); display:block; margin-bottom:2px">Syarat Peserta</b>
+          <ul style="margin:4px 0; padding-left:18px; line-height:1.6">
+            <li>Mahasiswa aktif FMIPA UNM (KTM aktif)</li>
+            <li>Usia 17 – 30 tahun</li>
+            <li>Mengisi formulir pendaftaran online</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px">
+        <i data-lucide="timer" style="width:18px; color:var(--accent-yellow); flex-shrink:0"></i>
+        <div>
+          <b style="color:var(--accent-yellow); display:block; margin-bottom:2px">Masa Tunggu</b>
+          <span>Penyakit: 14 hari. Kecelakaan: Langsung aktif.</span>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px">
+        <i data-lucide="wallet" style="width:18px; color:var(--accent-green); flex-shrink:0"></i>
+        <div>
+          <b style="color:var(--accent-green); display:block; margin-bottom:2px">Mekanisme Dana</b>
+          <span>Iuran kolektif rekening bersama. Klaim dari dana peserta.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:25px; font-size: 16px;">Pilih Paket Proteksi</h3>
+  <div class="package-card">
+    <div style="display:flex; justify-content:space-between">
+      <span style="font-size:10px; font-weight:700; color:var(--primary)">EKONOMIS</span>
+      <i data-lucide="zap" style="width:14px"></i>
+    </div>
+    <h3 style="margin:10px 0">Paket Hemat</h3>
+    <p style="font-size:12px; opacity:0.7">Rp15.000 / tahun</p>
+    <button class="btn" onclick="pilih('Hemat')">Daftar Sekarang</button>
+  </div>
+
+  <div class="package-card" style="border-color: var(--accent-yellow);">
+    <div style="display:flex; justify-content:space-between">
+      <span style="font-size:10px; font-weight:700; color:var(--accent-yellow)">BEST SELLER</span>
+      <i data-lucide="crown" style="width:14px; color:var(--accent-yellow)"></i>
+    </div>
+    <h3 style="margin:10px 0">Paket Lengkap</h3>
+    <p style="font-size:12px; opacity:0.7">Rp30.000 / tahun</p>
+    <button class="btn" onclick="pilih('Lengkap')">Daftar Sekarang</button>
+  </div>
+</div>
+
+<!-- HALAMAN LAINNYA (MANFAAT, KONSULTASI, DSB) -->
+<div id="manfaat" class="page">
+  <h3><i data-lucide="award"></i> Benefit Member</h3>
+  <div id="manfaatContent">
+    <div class="package-card" style="text-align: center; opacity: 0.5; padding: 40px 20px;">
+       <i data-lucide="lock" style="width:40px; height:40px; margin-bottom:10px"></i>
+       <p>Detail manfaat hanya tersedia untuk member yang sudah login.</p>
+    </div>
+  </div>
+</div>
+
+<div id="konsultasi" class="page">
+  <div style="text-align: center; margin-bottom: 30px; padding-top: 20px;">
+    <div style="background: rgba(34, 197, 94, 0.1); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+      <i data-lucide="stethoscope" style="width: 40px; height: 40px; color: var(--accent-green);"></i>
+    </div>
+    <h2>Tanya Dokter</h2>
+    <p style="opacity: 0.7;">Layanan chat medis instan tanpa biaya tambahan.</p>
+  </div>
+  <button class="btn" style="background: var(--accent-green);" onclick="hubungiDokter()">
+    <i data-lucide="message-circle" style="display:inline-block; vertical-align:middle; margin-right:8px"></i> Mulai Chat Sekarang
+  </button>
+</div>
+
+<div id="register" class="page">
+  <h3>Daftar Kepesertaan</h3>
+  <input id="nama" placeholder="Nama Lengkap sesuai KTM">
+  <input id="nim" placeholder="NIM">
+  <input id="jurusan" placeholder="Jurusan">
+  <select id="paket">
+    <option value="">-- Pilih Paket --</option>
+    <option value="Hemat">Paket Hemat (Rp15rb)</option>
+    <option value="Lengkap">Paket Lengkap (Rp30rb)</option>
+  </select>
+  <input id="email" placeholder="Alamat Email">
+  <input id="password" type="password" placeholder="Buat Password">
+  <button class="btn" onclick="daftar()">Konfirmasi & Bayar</button>
+</div>
+
+<div id="login" class="page">
+  <div style="text-align:center; margin-bottom:30px">
+    <i data-lucide="user-check" style="width:50px; height:50px; color:var(--primary)"></i>
+    <h3>Member Login</h3>
+  </div>
+  <input id="loginEmail" placeholder="Email">
+  <input id="loginPassword" type="password" placeholder="Password">
+  <button class="btn" onclick="login()">Masuk ke Dashboard</button>
+</div>
+
+<div id="dashboard" class="page">
+  <h3 style="margin-bottom: 20px;">E-Membership Card</h3>
+  <div class="idcard" id="idcard">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <div>
+        <div class="id-label">FMIPA-CARE PROTECT</div>
+        <div class="id-name" id="cardNama">-</div>
+      </div>
+      <div id="cardPaket" style="font-size: 10px; font-weight: 900; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 10px;">-</div>
+    </div>
+    <div class="card-chip"></div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+      <div><span class="id-label">NIM</span><span class="detail-val" id="cardNIM">-</span></div>
+      <div><span class="id-label">MEMBER ID</span><span class="detail-val" id="cardID" style="color:var(--accent-yellow)">-</span></div>
+    </div>
+    <div><span class="id-label">JURUSAN</span><span class="detail-val" id="cardJurusan">-</span></div>
+    <div class="qr-container"><div id="qrcode"></div></div>
+  </div>
+  <button class="btn" style="background:transparent; border: 1px solid rgba(255,255,255,0.2); margin-top:20px" onclick="location.reload()">Keluar Sesi</button>
+</div>
+
+<!-- NAVIGASI BAWAH -->
+<div class="bottom-nav">
+  <button onclick="show('home', this)" class="active-btn"><i data-lucide="home"></i>Home</button>
+  <button onclick="show('manfaat', this)"><i data-lucide="award"></i>Manfaat</button>
+  <button onclick="show('konsultasi', this)"><i data-lucide="message-square"></i>Chat</button>
+  <button onclick="show('register', this)" id="nav-reg"><i data-lucide="user-plus"></i>Daftar</button>
+  <button onclick="show('login', this)"><i data-lucide="log-in"></i>Login</button>
+  <button onclick="show('dashboard', this)"><i data-lucide="user-circle"></i>Profil</button>
+</div>
+
+<script>
+lucide.createIcons();
+
+function show(pageId, btnElement){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active-btn'));
+  if(btnElement) btnElement.classList.add('active-btn');
+  lucide.createIcons();
+}
+
+function pilih(paket){
+  document.getElementById('paket').value = paket;
+  show('register', document.getElementById('nav-reg'));
+}
+
+function hubungiDokter() {
+  window.open('https://wa.me/628123456789?text=Halo%20Dokter%20FMIPA-Care%2C%20saya%20ingin%20konsultasi.', '_blank');
+}
+
+function updateManfaat(paket) {
+  const container = document.getElementById('manfaatContent');
+  const d = paket === 'Hemat' ? 
+    {title: 'Paket Hemat', color: '#0ea5e9', items: ['Iuran per tahun: Rp15.000 ', 'Iuran per bulan: Rp1.250 ', 'Santunan rawat inap (sakit): Rp50.000/hari ', 'Santunan rawat inap (kecelakaan): Rp50.000/hari ', 'Maksimal hari rawat: 7 hari/tahun', 'Santunan kecelakaan ringan: Rp150.000', 'Santunan meninggal akibat kecelakaan: Rp2.000.000', 'Santunan meninggal biasa: Rp500.000', 'Konsultasi kesehatan: Chat', 'ID Card digital: Tersedia'  ]} :
+    {title: 'Paket Lengkap', color: '#7c3aed', items: ['Iuran per tahun: Rp30.000', 'Iuran per bulan: Rp2.500', 'Santunan rawat inap (sakit): Rp100.000/hari', 'Santunan rawat inap (kecelakaan): Rp100.000/hari', 'Maksimal hari rawat: 10 hari/tahun', 'Santunan kecelakaan ringan: Rp300.000', 'Santunan meninggal akibat kecelakaan: Rp4.000.000', 'Santunan meninggal biasa: Rp1.000.000', 'Konsultasi kesehatan: Chat & Telepon', 'ID Card digital: Tersedia']};
+
+  container.innerHTML = `
+    <div class="package-card" style="border-left: 5px solid ${d.color};">
+      <h4 style="color:${d.color}">${d.title}</h4>
+      <ul style="padding-left: 20px; font-size: 13px; line-height: 2;">
+        ${d.items.map(item => `<li>${item}</li>`).join('')}
+      </ul>
+    </div>`;
+}
+
+function daftar(){
+  const data = {
+    nama: document.getElementById('nama').value,
+    nim: document.getElementById('nim').value,
+    jurusan: document.getElementById('jurusan').value,
+    paket: document.getElementById('paket').value,
+    email: document.getElementById('email').value,
+    password: document.getElementById('password').value
+  };
+
+  if(!data.email || !data.password || !data.nama) return alert('Mohon lengkapi semua data!');
+  localStorage.setItem(data.email, JSON.stringify(data));
+  alert('Pendaftaran Berhasil! Silakan Login.');
+  show('login');
+}
+
+function login(){
+  const email = document.getElementById('loginEmail').value;
+  const pass = document.getElementById('loginPassword').value;
+  const user = JSON.parse(localStorage.getItem(email) || '{}');
+
+  if(user.password === pass){
+    document.getElementById('cardNama').innerText = user.nama;
+    document.getElementById('cardPaket').innerText = user.paket.toUpperCase();
+    document.getElementById('cardNIM').innerText = user.nim;
+    document.getElementById('cardJurusan').innerText = user.jurusan;
+    const rid = 'ID-' + Math.floor(100000 + Math.random() * 900000);
+    document.getElementById('cardID').innerText = rid;
+    
+    document.getElementById('qrcode').innerHTML = '';
+    new QRCode(document.getElementById('qrcode'), { text: rid, width: 80, height: 80 });
+    document.getElementById('idcard').className = 'idcard ' + user.paket.toLowerCase();
+    
+    updateManfaat(user.paket);
+    show('dashboard');
+  } else {
+    alert('Email atau Password salah!');
+  }
+}
+</script>
+</body>
+</html>
